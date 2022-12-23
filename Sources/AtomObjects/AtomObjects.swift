@@ -44,22 +44,19 @@ public protocol AtomObjectKey {
 
 public protocol AtomObjectsContainer: AnyObject {
     
-    var storage: [ObjectIdentifier: any AtomObject] { get set }
+    subscript<Key>(key: Key.Type) -> Key.Atom where Key: AtomObjectKey { get set }
 }
 
-public extension AtomObjectsContainer {
-    
-    subscript<Key>(key: Key.Type) -> Key.Atom where Key: AtomObjectKey {
-        get { storage[ObjectIdentifier(Key.self)] as? Key.Atom ?? Key.defaultAtom }
-        set { storage[ObjectIdentifier(Key.self)] = newValue }
-    }
-}
-
-public class AtomObjects: AtomObjectsContainer {
+open class AtomObjects: AtomObjectsContainer {
 
     public static let `default` = AtomObjects()
 
-    public var storage = [ObjectIdentifier: any AtomObject]()
+    private var storage = [ObjectIdentifier: any AtomObject]()
+    
+    public subscript<Key>(key: Key.Type) -> Key.Atom where Key: AtomObjectKey {
+        get { storage[ObjectIdentifier(Key.self)] as? Key.Atom ?? Key.defaultAtom }
+        set { storage[ObjectIdentifier(Key.self)] = newValue }
+    }
     
     public init() {}
 }

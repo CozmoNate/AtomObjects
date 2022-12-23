@@ -36,6 +36,7 @@ struct EditingAtomKey: AtomObjectKey {
 
     static var defaultAtom = EditingAtom(value: false)
 }
+
 ```
 
 Then you need to register your atom in the container:
