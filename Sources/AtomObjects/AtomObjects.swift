@@ -69,7 +69,7 @@ public class AtomObjects: AtomObjectsContainer {
     
     public typealias Value = Atom.Value
     
-    @MainActor public var wrappedValue: Value {
+    public var wrappedValue: Value {
         get {
             return atom.value
         }
@@ -93,7 +93,7 @@ public class AtomObjects: AtomObjectsContainer {
     
     public typealias Value = Atom.Value
     
-    @MainActor public var wrappedValue: Value {
+    public var wrappedValue: Value {
         get {
             return atom.value
         }
@@ -102,7 +102,7 @@ public class AtomObjects: AtomObjectsContainer {
         }
     }
     
-    @MainActor public var projectedValue: Binding<Value> {
+    public var projectedValue: Binding<Value> {
         Binding {
             return atom.value
         } set: { newValue in

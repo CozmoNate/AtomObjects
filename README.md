@@ -25,7 +25,7 @@ Add "AtomObjects" dependency via integrated Swift Package Manager in XCode
 The first step is implementing an atom class conforming to the AtomObject protocol:
 
 ```swift
-final class EditingAtom: AtomObject {
+class EditingAtom: AtomObject {
     
     // Published property wrapper is needed allowing to trigger value updates.
     // Also, you can start update manually by calling objectWillChange.send() where appropriate.
@@ -36,7 +36,6 @@ struct EditingAtomKey: AtomObjectKey {
 
     static var defaultAtom = EditingAtom(value: false)
 }
-
 ```
 
 Then you need to register your atom in the container:
