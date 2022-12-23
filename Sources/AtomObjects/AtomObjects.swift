@@ -32,23 +32,36 @@ public protocol AtomObject: ObservableObject where ObjectWillChangePublisher == 
     
     associatedtype Value
     
-    static var `default`: Self { get }
-    
     var value: Value { get set }
 }
 
-public class AtomObjects {
+public protocol AtomObjectKey {
     
+    associatedtype Atom: AtomObject
+    
+    static var defaultAtom: Atom { get }
+}
+
+public protocol AtomObjectsContainer: AnyObject {
+    
+    var storage: [ObjectIdentifier: any AtomObject] { get set }
+}
+
+public extension AtomObjectsContainer {
+    
+    subscript<Key>(key: Key.Type) -> Key.Atom where Key: AtomObjectKey {
+        get { storage[ObjectIdentifier(Key.self)] as? Key.Atom ?? Key.defaultAtom }
+        set { storage[ObjectIdentifier(Key.self)] = newValue }
+    }
+}
+
+public class AtomObjects: AtomObjectsContainer {
+
     public static let `default` = AtomObjects()
-    
-    private var storage = [ObjectIdentifier: Any]()
+
+    public var storage = [ObjectIdentifier: any AtomObject]()
     
     public init() {}
-    
-    public subscript<Atom>(provider: Atom.Type) -> Atom where Atom: AtomObject {
-        get { storage[ObjectIdentifier(Atom.self)] as? Atom ?? Atom.`default` }
-        set { storage[ObjectIdentifier(Atom.self)] = newValue }
-    }
 }
 
 /// A property wrapper type that can read and write a value of a specified atom and refresh the view when the value is changed
@@ -67,8 +80,11 @@ public class AtomObjects {
     
     private var atom: Atom
     
-    public init(_ keyPath: KeyPath<AtomObjects, Atom>, provider: AtomObjects = .default) {
-        atom = provider[keyPath: keyPath]
+    public init<Container>(
+        _ keyPath: KeyPath<Container, Atom>,
+        container: Container = AtomObjects.default
+    ) where Container: AtomObjectsContainer {
+        atom = container[keyPath: keyPath]
     }
 }
 
@@ -96,7 +112,10 @@ public class AtomObjects {
     
     @ObservedObject private var atom: Atom
     
-    public init(_ keyPath: KeyPath<AtomObjects, Atom>, provider: AtomObjects = .default) {
-        atom = provider[keyPath: keyPath]
+    public init<Container>(
+        _ keyPath: KeyPath<Container, Atom>,
+        container: Container = AtomObjects.default
+    ) where Container: AtomObjectsContainer {
+        atom = container[keyPath: keyPath]
     }
 }

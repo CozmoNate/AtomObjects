@@ -4,8 +4,8 @@
 ![Language](https://img.shields.io/badge/swift-5.7-orange.svg)
 ![Coverage](https://img.shields.io/badge/coverage-97%25-green)
 
-AtomObjects is a lightweight state management library for SwiftUI. It allows building distributed shared states 
-for SwiftUI applications with minimum boilerplate code.
+AtomObjects is a lightweight state management library for SwiftUI. It allows building distributed & reusable shared 
+states for SwiftUI applications with minimum boilerplate code.
 
 ## Motivation
 
@@ -27,28 +27,27 @@ The first step is implementing an atom class conforming to the AtomObject protoc
 ```swift
 final class EditingAtom: AtomObject {
     
-    static var `default` = EditingAtom(value: false)
-    
     // Published property wrapper is needed allowing to trigger value updates.
     // Also, you can start update manually by calling objectWillChange.send() where appropriate.
     @Published var value: Bool
-    
-    init(value: Bool) {
-        self.value = value
-    }
+}
+
+struct EditingAtomKey: AtomObjectKey {
+
+    static var defaultAtom = EditingAtom(value: false)
 }
 
 ```
 
-Then you need to register your atom in a container:
+Then you need to register your atom in the container:
 
 ```swift
 // Register in the default container
 extension AtomObjects {
     
     var isEditing: EditingAtom {
-        get { return self[EditingAtom.self] }
-        set { self[EditingAtom.self] = newValue }
+        get { return self[EditingAtomKey.self] }
+        set { self[EditingAtomKey.self] = newValue }
     }
 }
 ```

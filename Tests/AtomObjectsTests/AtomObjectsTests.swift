@@ -6,17 +6,17 @@ import Foundation
 @testable import AtomObjects
 
 final class CounterAtom: AtomObject {
-    
-    static var `default` = CounterAtom()
-    
     @Published var value: Int = 0
 }
 
+struct CounterAtomKey: AtomObjectKey {
+    static var defaultAtom = CounterAtom()
+}
+
 extension AtomObjects {
-    
     var counter: CounterAtom {
-        get { return self[CounterAtom.self] }
-        set { self[CounterAtom.self] = newValue }
+        get { return self[CounterAtomKey.self] }
+        set { self[CounterAtomKey.self] = newValue }
     }
 }
 
@@ -53,10 +53,11 @@ final class DependenciesTests: QuickSpec {
                         
                         expect(counter).to(equal(42))
                         
-                        subscription = CounterAtom.default.objectWillChange.receive(on: DispatchQueue.main).sink { _ in
-                            expect(counter).to(equal(11))
-                            done()
-                        }
+                        subscription = CounterAtomKey.defaultAtom
+                            .objectWillChange.receive(on: DispatchQueue.main).sink { _ in
+                                expect(counter).to(equal(11))
+                                done()
+                            }
                         
                         expect(subscription).notTo(beNil())
                         
@@ -72,10 +73,11 @@ final class DependenciesTests: QuickSpec {
                         
                         expect($counter.wrappedValue).to(equal(11))
                         
-                        subscription = CounterAtom.default.objectWillChange.receive(on: DispatchQueue.main).sink { _ in
-                            expect($counter.wrappedValue).to(equal(42))
-                            done()
-                        }
+                        subscription = CounterAtomKey.defaultAtom
+                            .objectWillChange.receive(on: DispatchQueue.main).sink { _ in
+                                expect($counter.wrappedValue).to(equal(42))
+                                done()
+                            }
                         
                         expect(subscription).notTo(beNil())
                         
