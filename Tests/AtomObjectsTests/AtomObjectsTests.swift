@@ -45,7 +45,7 @@ final class DependenciesTests: QuickSpec {
             
             context("@AtomValue") {
                 
-                @AtomValue(\.counter, onWrite: { newValue, oldValue in newValue == 11 ? 11 : newValue })
+                @AtomValue(\.counter, set: { newValue, oldValue in newValue == 11 ? 11 : newValue })
                 var counter: Int
                 
                 it("should be available with default value") {
@@ -60,7 +60,7 @@ final class DependenciesTests: QuickSpec {
             
             context("@AtomValue: custom setter") {
                 
-                @AtomValue(\.counter, onWrite: { newValue, oldValue in newValue == 11 ? 111 : newValue })
+                @AtomValue(\.counter, set: { newValue, oldValue in newValue == 11 ? 111 : newValue })
                 var counter: Int
                 
                 it("should be available with default value") {
@@ -121,7 +121,7 @@ final class DependenciesTests: QuickSpec {
             
             context("@AtomState: custom setter") {
                 
-                @AtomState(\.counter, onWrite: { newValue, oldValue in newValue == 11 ? 111 : newValue })
+                @AtomState(\.counter, set: { newValue, oldValue in newValue == 11 ? 111 : newValue })
                 var counter: Int
                 
                 it("should be available with default value") {

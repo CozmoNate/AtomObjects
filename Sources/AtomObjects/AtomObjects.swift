@@ -61,6 +61,28 @@ open class AtomObjects: AtomObjectsContainer {
     public init() {}
 }
 
+extension Equatable {
+    
+    func isEqual<Other>(_ other: Other) -> Bool {
+        if let other = other as? Self {
+            return self == other
+        }
+        return false
+    }
+}
+
+extension AtomObject {
+    
+    func setNotEqual(_ newValue: Value) {
+        if let value = value as? any Equatable {
+            guard !value.isEqual(newValue) else {
+                return
+            }
+        }
+        value = newValue
+    }
+}
+
 /// A property wrapper type that can read and write a value of a specified atom and refresh the view when the value is changed
 @propertyWrapper
 public struct AtomValue<Atom, Container>: DynamicProperty where Atom: AtomObject, Container: AtomObjectsContainer {
@@ -72,7 +94,7 @@ public struct AtomValue<Atom, Container>: DynamicProperty where Atom: AtomObject
             return atom.value
         }
         nonmutating set {
-            atom.value = setter?(newValue, atom.value) ?? newValue
+            atom.setNotEqual(setter?(newValue, atom.value) ?? newValue)
         }
     }
     
@@ -100,7 +122,7 @@ public struct AtomState<Atom, Container>: DynamicProperty where Atom: AtomObject
             return atom.value
         }
         nonmutating set {
-            atom.value = setter?(newValue, atom.value) ?? newValue
+            atom.setNotEqual(setter?(newValue, atom.value) ?? newValue)
         }
     }
     
@@ -108,7 +130,7 @@ public struct AtomState<Atom, Container>: DynamicProperty where Atom: AtomObject
         Binding {
             return atom.value
         } set: { newValue in
-            atom.value = setter?(newValue, atom.value) ?? newValue
+            atom.setNotEqual(setter?(newValue, atom.value) ?? newValue)
         }
     }
     
