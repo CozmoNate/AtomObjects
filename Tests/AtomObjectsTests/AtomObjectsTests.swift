@@ -5,7 +5,7 @@ import Foundation
 
 @testable import AtomObjects
 
-final class CounterAtom: AtomObject {
+class CounterAtom: AtomObject {
     @Published var value: Int = 0
 }
 
@@ -13,10 +13,28 @@ struct CounterAtomKey: AtomObjectKey {
     static var defaultAtom = CounterAtom()
 }
 
+class ComplexAtom: AtomObject {
+    
+    struct Value {
+        var count: Int = 0
+    }
+    
+    @Published var value = Value()
+}
+
+struct ComplexAtomKey: AtomObjectKey {
+    static var defaultAtom = ComplexAtom()
+}
+
 extension AtomObjects {
     var counter: CounterAtom {
         get { return self[CounterAtomKey.self] }
         set { self[CounterAtomKey.self] = newValue }
+    }
+    
+    var complex: ComplexAtom {
+        get { return self[ComplexAtomKey.self] }
+        set { self[ComplexAtomKey.self] = newValue }
     }
 }
 
@@ -25,9 +43,9 @@ final class DependenciesTests: QuickSpec {
         
         describe("AtomObjects") {
             
-            context("@AtomValue by passing keyPath") {
+            context("@AtomValue") {
                 
-                @AtomValue(\.counter)
+                @AtomValue(\.counter, onWrite: { newValue, oldValue in newValue == 11 ? 11 : newValue })
                 var counter: Int
                 
                 it("should be available with default value") {
@@ -40,7 +58,22 @@ final class DependenciesTests: QuickSpec {
                 }
             }
             
-            context("Access projectedValue if @AtomObject") {
+            context("@AtomValue: custom setter") {
+                
+                @AtomValue(\.counter, onWrite: { newValue, oldValue in newValue == 11 ? 111 : newValue })
+                var counter: Int
+                
+                it("should be available with default value") {
+                    expect(counter).to(equal(42))
+                }
+                
+                it("should use custom setter") {
+                    counter = 11
+                    expect(counter).to(equal(111))
+                }
+            }
+            
+            context("@AtomState: access projectedValue") {
                 
                 @AtomState(\.counter)
                 var counter: Int
@@ -51,7 +84,7 @@ final class DependenciesTests: QuickSpec {
                     
                     waitUntil { done in
                         
-                        expect(counter).to(equal(42))
+                        expect(counter).to(equal(111))
                         
                         subscription = CounterAtomKey.defaultAtom
                             .objectWillChange.receive(on: DispatchQueue.main).sink { _ in
@@ -65,7 +98,7 @@ final class DependenciesTests: QuickSpec {
                     }
                 }
                 
-                it("should provide value working binding") {
+                it("should provide value binding") {
                     
                     var subscription: AnyCancellable?
                     
@@ -82,6 +115,49 @@ final class DependenciesTests: QuickSpec {
                         expect(subscription).notTo(beNil())
                         
                         $counter.wrappedValue = 42
+                    }
+                }
+            }
+            
+            context("@AtomState: custom setter") {
+                
+                @AtomState(\.counter, onWrite: { newValue, oldValue in newValue == 11 ? 111 : newValue })
+                var counter: Int
+                
+                it("should be available with default value") {
+                    expect(counter).to(equal(42))
+                }
+                
+                it("should use custom setter") {
+                    counter = 11
+                    expect(counter).to(equal(111))
+                }
+            }
+            
+            context("@AtomState: access complex value") {
+                
+                @AtomState(\.complex)
+                var complex: ComplexAtom.Value
+                
+                it("should provide value binding") {
+                    
+                    var subscription: AnyCancellable?
+                    
+                    waitUntil { done in
+                        
+                        let binding = $complex.count
+                        
+                        expect(binding.wrappedValue).to(equal(0))
+                        
+                        subscription = ComplexAtomKey.defaultAtom
+                            .objectWillChange.receive(on: DispatchQueue.main).sink { _ in
+                                expect(binding.wrappedValue).to(equal(42))
+                                done()
+                            }
+                        
+                        expect(subscription).notTo(beNil())
+                        
+                        binding.wrappedValue = 42
                     }
                 }
             }

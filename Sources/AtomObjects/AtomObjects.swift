@@ -62,7 +62,8 @@ open class AtomObjects: AtomObjectsContainer {
 }
 
 /// A property wrapper type that can read and write a value of a specified atom and refresh the view when the value is changed
-@propertyWrapper public struct AtomValue<Atom>: DynamicProperty where Atom: AtomObject {
+@propertyWrapper
+public struct AtomValue<Atom, Container>: DynamicProperty where Atom: AtomObject, Container: AtomObjectsContainer {
     
     public typealias Value = Atom.Value
     
@@ -71,22 +72,26 @@ open class AtomObjects: AtomObjectsContainer {
             return atom.value
         }
         nonmutating set {
-            atom.value = newValue
+            atom.value = setter?(newValue, atom.value) ?? newValue
         }
     }
     
     private var atom: Atom
+    private let setter: ((Value, Value) -> Value)?
     
-    public init<Container>(
-        _ keyPath: KeyPath<Container, Atom>,
-        container: Container = AtomObjects.default
-    ) where Container: AtomObjectsContainer {
+    public init(
+        _ keyPath: ReferenceWritableKeyPath<Container, Atom>,
+        container: Container = AtomObjects.default,
+        onWrite: ((_ newValue: Value, _ oldValue: Value) -> Value)? = nil
+    ) {
         atom = container[keyPath: keyPath]
+        setter = onWrite
     }
 }
 
 /// A property wrapper type that can read and write a value of a specified atom. It does not refresh the view when the value is changed.
-@propertyWrapper public struct AtomState<Atom>: DynamicProperty where Atom: AtomObject {
+@propertyWrapper
+public struct AtomState<Atom, Container>: DynamicProperty where Atom: AtomObject, Container: AtomObjectsContainer {
     
     public typealias Value = Atom.Value
     
@@ -95,7 +100,7 @@ open class AtomObjects: AtomObjectsContainer {
             return atom.value
         }
         nonmutating set {
-            atom.value = newValue
+            atom.value = setter?(newValue, atom.value) ?? newValue
         }
     }
     
@@ -103,16 +108,20 @@ open class AtomObjects: AtomObjectsContainer {
         Binding {
             return atom.value
         } set: { newValue in
-            atom.value = newValue
+            atom.value = setter?(newValue, atom.value) ?? newValue
         }
     }
     
-    @ObservedObject private var atom: Atom
+    @ObservedObject
+    private var atom: Atom
+    private let setter: ((Value, Value) -> Value)?
     
-    public init<Container>(
-        _ keyPath: KeyPath<Container, Atom>,
-        container: Container = AtomObjects.default
-    ) where Container: AtomObjectsContainer {
+    public init(
+        _ keyPath: ReferenceWritableKeyPath<Container, Atom>,
+        container: Container = AtomObjects.default,
+        onWrite: ((_ newValue: Value, _ oldValue: Value) -> Value)? = nil
+    ) {
         atom = container[keyPath: keyPath]
+        setter = onWrite
     }
 }
