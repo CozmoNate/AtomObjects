@@ -82,10 +82,10 @@ public struct AtomValue<Atom, Container>: DynamicProperty where Atom: AtomObject
     public init(
         _ keyPath: ReferenceWritableKeyPath<Container, Atom>,
         container: Container = AtomObjects.default,
-        onWrite: ((_ newValue: Value, _ oldValue: Value) -> Value)? = nil
+        set: ((_ newValue: Value, _ oldValue: Value) -> Value)? = nil
     ) {
         atom = container[keyPath: keyPath]
-        setter = onWrite
+        setter = set
     }
 }
 
@@ -119,9 +119,9 @@ public struct AtomState<Atom, Container>: DynamicProperty where Atom: AtomObject
     public init(
         _ keyPath: ReferenceWritableKeyPath<Container, Atom>,
         container: Container = AtomObjects.default,
-        onWrite: ((_ newValue: Value, _ oldValue: Value) -> Value)? = nil
+        set: ((_ newValue: Value, _ oldValue: Value) -> Value)? = nil
     ) {
         atom = container[keyPath: keyPath]
-        setter = onWrite
+        setter = set
     }
 }
