@@ -95,7 +95,7 @@ final class DependenciesTests: QuickSpec {
             
             context("@AtomValue") {
                 
-                @AtomValue(\.counter, set: { newValue, oldValue in newValue == 11 ? 11 : newValue })
+                @AtomValue(\.counter, set: { $1.value = $0 == 11 ? 11 : $0 }) 
                 var counter: Int
                 
                 it("should be mutable") {
@@ -106,7 +106,7 @@ final class DependenciesTests: QuickSpec {
             
             context("@AtomValue: custom setter") {
                 
-                @AtomValue(\.counter, set: { newValue, oldValue in newValue == 11 ? 111 : newValue })
+                @AtomValue(\.counter, set: { $1.value = $0 == 11 ? 111 : $0 })
                 var counter: Int
                 
                 it("should use custom setter") {
@@ -219,7 +219,7 @@ final class DependenciesTests: QuickSpec {
             
             context("@AtomState: custom setter") {
                 
-                @AtomState(\.counter, set: { newValue, oldValue in newValue == 11 ? 111 : newValue })
+                @AtomState(\.counter, set: { $1.value = $0 == 11 ? 111 : $0 })
                 var counter: Int
                 
                 it("should use custom setter") {

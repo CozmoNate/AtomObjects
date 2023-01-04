@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-/// A property wrapper type that can read and write a value of a specified atom and refreshes views when the value is changed.
+/// A property wrapper type that can read and write a value of a specific atom and refreshes views when the value is changed.
 @propertyWrapper
 public struct AtomState<Atom, Container>: DynamicProperty where Atom: AtomObject, Container: AtomObjectsContainer {
     
@@ -17,25 +17,39 @@ public struct AtomState<Atom, Container>: DynamicProperty where Atom: AtomObject
             return atom.value
         }
         nonmutating set {
-            atom.setThenNotEqual(setter?(newValue, atom.value) ?? newValue)
+            if let setter {
+                setter(newValue, atom)
+            } else {
+                atom.setThenNotEqual(newValue)
+            }
         }
     }
     
     public var projectedValue: Binding<Value> {
-        Binding { atom.value } set: {
-            atom.setThenNotEqual(setter?($0, atom.value) ?? $0)
+        Binding { atom.value } set: { newValue in
+            if let setter {
+                setter(newValue, atom)
+            } else {
+                atom.setThenNotEqual(newValue)
+            }
         }
     }
     
     @ObservedObject
     private var atom: Atom
     
-    private let setter: ((Value, Value) -> Value)?
+    private let setter: ((_ newValue: Value, _ atomObject: Atom) -> Void)?
     
+    /// Creates a proxy for a specific atom value that refreshes a view when the atom value is changed.
+    ///
+    /// - Parameters:
+    ///   - keyPath: A key path to a specific atom in the container.
+    ///   - container: A container for atoms.
+    ///   - set: A custom value setter.
     public init(
         _ keyPath: ReferenceWritableKeyPath<Container, Atom>,
         container: Container = AtomObjects.default,
-        set: ((_ newValue: Value, _ oldValue: Value) -> Value)? = nil
+        set: ((_ newValue: Value, _ atomObject: Atom) -> Void)? = nil
     ) {
         atom = container[keyPath: keyPath]
         setter = set

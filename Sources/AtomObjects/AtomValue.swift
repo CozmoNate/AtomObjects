@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-/// A property wrapper type that can read and write a value of the specified atom. It does not refreshes views when the value is changed.
+/// A property wrapper type that can read and write a value of the specic atom. It does not refreshes views when the value is changed.
 @propertyWrapper
 public struct AtomValue<Atom, Container> where Atom: AtomObject, Container: AtomObjectsContainer {
     
@@ -28,23 +28,37 @@ public struct AtomValue<Atom, Container> where Atom: AtomObject, Container: Atom
             return wrapper.atom.value
         }
         nonmutating set {
-            wrapper.atom.setThenNotEqual(setter?(newValue, wrapper.atom.value) ?? newValue)
+            if let setter {
+                setter(newValue, wrapper.atom)
+            } else {
+                wrapper.atom.setThenNotEqual(newValue)
+            }
         }
     }
     
     public var projectedValue: Binding<Value> {
-        Binding { wrapper.atom.value } set: {
-            wrapper.atom.setThenNotEqual(setter?($0, wrapper.atom.value) ?? $0)
+        Binding { wrapper.atom.value } set: { newValue in
+            if let setter {
+                setter(newValue, wrapper.atom)
+            } else {
+                wrapper.atom.setThenNotEqual(newValue)
+            }
         }
     }
     
     private var wrapper: Wrapper
-    private let setter: ((Value, Value) -> Value)?
+    private let setter: ((_ newValue: Value, _ atomObject: Atom) -> Void)?
     
+    /// Creates a proxy for a specific atom value.
+    ///
+    /// - Parameters:
+    ///   - keyPath: A key path to a specific atom in the container.
+    ///   - container: A container for atoms.
+    ///   - set: A custom value setter.
     public init(
         _ keyPath: ReferenceWritableKeyPath<Container, Atom>,
         container: Container = AtomObjects.default,
-        set: ((_ newValue: Value, _ oldValue: Value) -> Value)? = nil
+        set: ((_ newValue: Value, _ atomObject: Atom) -> Void)? = nil
     ) {
         wrapper = Wrapper(resolver: container[keyPath: keyPath])
         setter = set
