@@ -29,5 +29,5 @@ public protocol AtomRootAction {
     
     associatedtype Root: AtomRoot
     
-    @MainActor func perform(with root: Root) async
+    func perform(with root: Root) async
 }
