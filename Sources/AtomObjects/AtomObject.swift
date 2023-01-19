@@ -1,7 +1,7 @@
-AtomObjects licensed under MIT License
-
-MIT License
-
+/*
+ 
+AtomObjects
+ 
 Copyright (c) 2023 Natan Zalkin
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,3 +21,30 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+ 
+*/
+
+
+import Combine
+
+open class AtomObject<Value>: ObservableObject {
+    
+    @Published
+    public var value: Value
+    
+    public required init(value: Value) {
+        self.value = value
+    }
+}
+
+internal extension AtomObject {
+    
+    func setThenNotEqual(_ newValue: Value) {
+        if let value = value as? any Equatable {
+            guard !value.isEqual(newValue) else {
+                return
+            }
+        }
+        value = newValue
+    }
+}

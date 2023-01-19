@@ -1,7 +1,7 @@
-AtomObjects licensed under MIT License
-
-MIT License
-
+/*
+ 
+AtomObjects
+ 
 Copyright (c) 2023 Natan Zalkin
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,3 +21,27 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+ 
+*/
+    
+
+import SwiftUI
+
+public struct AtomScope<Root, Content>: View where Root: AtomRoot, Content: View {
+    
+    @StateObject
+    private var root: Root
+    
+    private var content: () -> Content
+    
+    public var body: some View {
+        content().environmentObject(root)
+    }
+    
+    public init(root: @autoclosure @escaping () -> Root, content: @escaping () -> Content) {
+        self.content = content
+        
+        _root = StateObject(wrappedValue: root())
+    }
+}
+
