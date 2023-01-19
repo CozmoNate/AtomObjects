@@ -27,14 +27,13 @@ SOFTWARE.
 
 import Combine
 
-open class AtomObject<Value>: ObservableObject {
+public protocol AtomObject: ObservableObject {
     
-    @Published
-    public var value: Value
+    associatedtype Value
     
-    public required init(value: Value) {
-        self.value = value
-    }
+    var value: Value { get set }
+    
+    init(value: Value)
 }
 
 internal extension AtomObject {
@@ -48,3 +47,4 @@ internal extension AtomObject {
         value = newValue
     }
 }
+

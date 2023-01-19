@@ -25,9 +25,14 @@ SOFTWARE.
 */
     
 
-public protocol AtomObjectKey {
+import Combine
+
+public class GenericAtom<Value>: AtomObject {
     
-    associatedtype Value
-       
-    static var defaultValue: Value { get }
+    @Published
+    public var value: Value
+    
+    public required init(value: Value) {
+        self.value = value
+    }
 }

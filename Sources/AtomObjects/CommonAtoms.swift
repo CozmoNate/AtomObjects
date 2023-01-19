@@ -25,9 +25,15 @@ SOFTWARE.
 */
     
 
-public protocol AtomObjectKey {
+import Foundation
+
+open class CommonAtoms: AtomRoot {
     
-    associatedtype Value
-       
-    static var defaultValue: Value { get }
+    public var storage: AtomStorage
+    public var version: AnyHashable
+    
+    public init() {
+        storage = AtomStorage()
+        version = UUID()
+    }
 }

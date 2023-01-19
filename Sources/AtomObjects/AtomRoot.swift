@@ -28,35 +28,32 @@ SOFTWARE.
 import Foundation
 import Combine
 
-open class AtomRoot: ObservableObject {
+public struct AtomStorage {
     
-    internal struct Storage {
-        
-        var storage = [ObjectIdentifier: AnyObject]()
-        
-        subscript<Key>(key: Key.Type) -> Key.AtomType? where Key: AtomObjectKey {
-            get { storage[ObjectIdentifier(Key.self)] as? AtomObject<Key.Value> }
-            set { storage[ObjectIdentifier(Key.self)] = newValue }
-        }
+    private var storage = [ObjectIdentifier: AnyObject]()
+
+    public subscript<Key, Atom>(key: Key.Type) -> Atom? where Key: AtomObjectKey, Atom: AtomObject, Atom.Value == Key.Value {
+        get { storage[ObjectIdentifier(Key.self)] as? Atom }
+        set { storage[ObjectIdentifier(Key.self)] = newValue }
     }
     
-    internal var storage: Storage
-    internal var version: UUID
+    public init() {}
+}
+
+public protocol AtomRoot: ObservableObject where ObjectWillChangePublisher == ObservableObjectPublisher {
     
-    public required init() {
-        storage = Storage()
-        version = UUID()
-    }
+    var storage: AtomStorage { get set }
+    var version: AnyHashable { get set }
 }
 
 public extension AtomRoot {
     
-    subscript<Key>(key: Key.Type) -> Key.AtomType where Key: AtomObjectKey {
+    subscript<Key, Atom>(key: Key.Type) -> Atom where Key: AtomObjectKey, Atom: AtomObject, Atom.Value == Key.Value {
         get {
-            if let atom = storage[Key.self] {
+            if let atom: Atom = storage[Key.self] {
                 return atom
             } else {
-                let atom = Key.AtomType(value: Key.defaultValue)
+                let atom = Atom(value: Key.defaultValue)
                 storage[Key.self] = atom
                 return atom
             }

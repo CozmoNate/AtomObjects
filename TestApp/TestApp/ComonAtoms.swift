@@ -4,15 +4,8 @@
 //
     
 
+import Foundation
 import AtomObjects
-
-class CommonAtoms: AtomRoot {
-    
-    var counter: AtomObject<Int> {
-        get { return self[CounterAtomKey.self] }
-        set { self[CounterAtomKey.self] = newValue }
-    }
-}
 
 extension CommonAtoms {
     
@@ -45,5 +38,10 @@ extension CommonAtoms {
         func perform(with root: CommonAtoms) async {
             root.counter.value -= value
         }
+    }
+    
+    var counter: GenericAtom<Int> {
+        get { return self[CounterAtomKey.self] }
+        set { self[CounterAtomKey.self] = newValue }
     }
 }

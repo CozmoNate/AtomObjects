@@ -26,6 +26,8 @@ In the first step you need to implement an atom class conforming to the AtomObje
 object with the state value:
 
 ```swift
+// Instead of implementing AtomObject protocol by yourself, you can just use GenericAtom class with the similar basic
+// implementation as below:
 class EditingAtom: AtomObject {
     
     // Published property wrapper is needed allowing to trigger value updates.
@@ -38,22 +40,28 @@ class EditingAtom: AtomObject {
 }
 ```
 
-The next step is registering unique key associated with the specific atom type:
+The next step is registering unique key associated with the default atom value:
 
 ```swift
 struct EditingAtomKey: AtomObjectKey {
 
-    typealias Atom = EditingAtomKey
+    static let defaultValue = false
 }
 ```
 
-At last you need to subclass AtomRoot object and register your atom in the new container. Atom object key is intended to 
-be used as an identifier of the atom path inside a root container:
+At last you need to implement AtomRoot protocol or subclass/extend CommonAtoms object and register your atom in the 
+container. Atom object key is intended to be used as the identifier of an atom path inside root container:
 
 ```swift
-class CommonAtoms: AtomRoot {
+extension CommonAtoms {
      
     var isEditing: EditingAtom {
+        get { return self[EditingAtomKey.self] }
+        set { self[EditingAtomKey.self] = newValue }
+    }
+    
+    // Implementation option using GenericAtom class 
+    var isEditing: GenericAtom<Bool> {
         get { return self[EditingAtomKey.self] }
         set { self[EditingAtomKey.self] = newValue }
     }

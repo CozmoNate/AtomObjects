@@ -119,7 +119,7 @@ struct TertiaryView: View {
             }
             
             Button {
-                root.counter = AtomObject(value: 5)
+                root.counter = GenericAtom(value: 5)
             } label: {
                 Text("Rewrite atom")
             }

@@ -30,18 +30,16 @@ import Combine
 
 /// A property wrapper type that can read and write a value of a specific atom and refreshes views when the value is changed.
 @propertyWrapper
-public struct AtomState<Value, Root>: DynamicProperty where Root: AtomRoot {
-    
-    public typealias AtomType = AtomObject<Value>
+public struct AtomState<Root, Atom, Value>: DynamicProperty where Root: AtomRoot, Atom: AtomObject, Atom.Value == Value {
     
     @EnvironmentObject
     private var root: Root
     
-    private var keyPath: ReferenceWritableKeyPath<Root, AtomType>
-    private var setter: ((_ newValue: Value, _ atomObject: AtomType) -> Void)?
+    private var keyPath: ReferenceWritableKeyPath<Root, Atom>
+    private var setter: ((_ newValue: Value, _ atomObject: Atom) -> Void)?
     
     @StateObject
-    private var observer = Observer<Value>()
+    private var observer = Observer()
     
     @MainActor
     public var wrappedValue: Value {
@@ -64,9 +62,9 @@ public struct AtomState<Value, Root>: DynamicProperty where Root: AtomRoot {
     ///   - root: An atom root type.
     ///   - set: An in-place atom value setter.
     public init(
-        _ keyPath: ReferenceWritableKeyPath<Root, AtomType>,
+        _ keyPath: ReferenceWritableKeyPath<Root, Atom>,
         root: Root.Type = Root.self,
-        set: ((_ newValue: Value, _ atomObject: AtomType) -> Void)? = nil
+        set: ((_ newValue: Value, _ atomObject: Atom) -> Void)? = nil
     ) {
         self.keyPath = keyPath
         self.setter = set
@@ -79,12 +77,12 @@ public struct AtomState<Value, Root>: DynamicProperty where Root: AtomRoot {
 
 private extension AtomState {
     
-    class Observer<Value>: ObservableObject {
+    class Observer: ObservableObject {
         
         private var subscription: AnyCancellable?
-        private var version = UUID()
+        private var version: AnyHashable = UUID()
         
-        var atom: AtomObject<Value>! {
+        var atom: Atom! {
             didSet {
                 value = atom.value
                 subscription = atom.objectWillChange
@@ -104,7 +102,7 @@ private extension AtomState {
             atom != nil
         }
         
-        func resolve<Root>(_ keyPath: ReferenceWritableKeyPath<Root, AtomObject<Value>>, root: Root) where Root: AtomRoot {
+        func resolve(_ keyPath: ReferenceWritableKeyPath<Root, Atom>, root: Root) {
             guard version != root.version else {
                 return
             }
