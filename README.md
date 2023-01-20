@@ -156,7 +156,11 @@ the code example below. The action in the example have a configurable increment 
         }
         
         func perform(with root: CommonAtoms) async {
-            root.counter.value += value
+            
+            // Convenience wrapper allowing to access atom value via local variable
+            @AtomValue(root.counter) var counter; 
+            
+            counter += value
         }
     }
 ```

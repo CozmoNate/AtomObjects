@@ -23,7 +23,10 @@ extension CommonAtoms {
         }
         
         func perform(with root: CommonAtoms) async {
-            root.counter.value += value
+            
+            @AtomValue(\.counter, in: root) var counter;
+            
+            counter += value
         }
     }
     
@@ -36,7 +39,10 @@ extension CommonAtoms {
         }
         
         func perform(with root: CommonAtoms) async {
-            root.counter.value -= value
+            
+            @AtomValue(root.counter) var counter;
+            
+            counter -= value
         }
     }
     
