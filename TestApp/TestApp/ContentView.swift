@@ -135,8 +135,8 @@ struct QuaternaryView: View {
     @AtomState(\CommonAtoms.counter)
     var counter
     
-    @AtomDispatcher(CommonAtoms.self)
-    var dispatcher
+    @EnvironmentObject
+    var dispatcher: CommonAtoms
     
     var body: some View {
         VStack {
@@ -155,7 +155,7 @@ struct QuaternaryView: View {
                 Spacer()
                 
                 Button {
-                    dispatcher.dispatch(CommonAtoms.IncrementCounter(by: counter == 0 ? 1 : abs(counter)))
+                    CommonAtoms.IncrementCounter(by: counter == 0 ? 1 : abs(counter)).perform(with: dispatcher)
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.title)

@@ -44,6 +44,9 @@ public protocol AtomRoot: ObservableObject where ObjectWillChangePublisher == Ob
     
     var storage: AtomStorage { get set }
     var version: AnyHashable { get set }
+    
+    func dispatch<Action>(_ action: Action) where Action: AtomRootAction, Action.Root == Self
+    func dispatch<Action>(_ action: Action) async where Action: AtomRootAction, Action.Root == Self
 }
 
 public extension AtomRoot {
@@ -63,6 +66,16 @@ public extension AtomRoot {
             storage[Key.self] = newValue
             version = UUID()
         }
+    }
+    
+    func dispatch<Action>(_ action: Action) where Action: AtomRootAction, Action.Root == Self {
+        Task {
+            await action.perform(with: self)
+        }
+    }
+    
+    func dispatch<Action>(_ action: Action) async where Action: AtomRootAction, Action.Root == Self {
+        await action.perform(with: self)
     }
 }
 

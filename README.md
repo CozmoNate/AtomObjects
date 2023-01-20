@@ -187,7 +187,7 @@ The action from the example above can be stored and cashed inside consuming view
     } 
 ```
 
-If you need to configure the action upon execution, it can be done by using action dispatcher:
+If you need to configure the action upon execution, it can be done by directly dispatching action from atom root:
 
 ```swift
 
@@ -196,15 +196,28 @@ If you need to configure the action upon execution, it can be done by using acti
         @AtomState(\CommonAtoms.counter)
         var counter
     
-        @AtomDispatcher(CommonAtoms.self)
-        var dispatcher
+        @EnvironmentObject
+        var commons: CommonAtoms
     
         var body: some View {
         
-            Button {
-                dispatcher.dispatch(IncrementCounter(by: count * 2))
-            } label: {
-                Text("Increment counter: \(counter)")
+            HStack {
+                Button {
+                    commons.dispatch(IncrementCounter(by: count * 2))
+                } label: {
+                    Text("Increment")
+                }
+                .buttonStyle(.borderedProminent)
+                            
+                Text("Counter: \(counter)")
+                
+                Button {
+                    // It is possible to use action execution method notation
+                    DecrementCounter(by: count * 2).perform(with: commons)
+                } label: {
+                    Text("Decrement")
+                }
+                .buttonStyle(.borderedProminent)
             }
         }
     }     
