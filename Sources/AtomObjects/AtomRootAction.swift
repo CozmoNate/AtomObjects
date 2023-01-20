@@ -31,3 +31,12 @@ public protocol AtomRootAction {
     
     func perform(with root: Root) async
 }
+
+public extension AtomRootAction {
+    
+    func perform(with root: Root) {
+        Task {
+            await perform(with: root)
+        }
+    }
+}
