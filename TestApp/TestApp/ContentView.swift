@@ -32,7 +32,7 @@ struct ContentView: View {
 
 struct Controls: View {
     
-    @AtomState(\AtomObjects.counter)
+    @AtomBinding(\AtomObjects.counter)
     var counter
     
     @AtomAction(AtomObjects.IncrementCounter(by: 1))
