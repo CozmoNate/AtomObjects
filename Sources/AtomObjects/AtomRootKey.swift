@@ -25,20 +25,9 @@ SOFTWARE.
 */
     
 
-import Foundation
-
-open class AtomObjects: AtomRoot {
+public protocol AtomRootKey {
     
-    public var parent: (any AtomRoot)?
-    
-    public var atoms: AtomStorage
-    public var roots: RootStorage
-    
-    public var version: AnyHashable
-    
-    public init() {
-        atoms = AtomStorage()
-        roots = RootStorage()
-        version = UUID()
-    }
+    associatedtype Root: AtomRoot
+       
+    static var defaultRoot: Root { get }
 }

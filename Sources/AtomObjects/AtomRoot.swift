@@ -40,9 +40,25 @@ public struct AtomStorage {
     public init() {}
 }
 
+public struct RootStorage {
+    
+    private var storage = [ObjectIdentifier: any AtomRoot]()
+
+    public subscript<Key>(key: Key.Type) -> Key.Root? where Key: AtomRootKey {
+        get { storage[ObjectIdentifier(Key.self)] as? Key.Root }
+        set { storage[ObjectIdentifier(Key.self)] = newValue }
+    }
+    
+    public init() {}
+}
+
 public protocol AtomRoot: ObservableObject where ObjectWillChangePublisher == ObservableObjectPublisher {
     
-    var storage: AtomStorage { get set }
+    var parent: (any AtomRoot)? { get set }
+    
+    var atoms: AtomStorage { get set }
+    var roots: RootStorage { get set }
+    
     var version: AnyHashable { get set }
     
     func dispatch<Action>(_ action: Action) where Action: AtomRootAction, Action.Root == Self
@@ -53,19 +69,42 @@ public extension AtomRoot {
     
     subscript<Key, Atom>(key: Key.Type) -> Atom where Key: AtomObjectKey, Atom: AtomObject, Atom.Value == Key.Value {
         get {
-            if let atom: Atom = storage[Key.self] {
+            if let atom: Atom = atoms[Key.self] {
                 return atom
             } else {
                 let atom = Atom(value: Key.defaultValue)
-                storage[Key.self] = atom
+                atoms[Key.self] = atom
                 return atom
             }
         }
         set {
-            objectWillChange.send()
-            storage[Key.self] = newValue
-            version = UUID()
+            upgrade()
+            atoms[Key.self] = newValue
         }
+    }
+    
+    subscript<Key>(key: Key.Type) -> Key.Root where Key: AtomRootKey {
+        get {
+            if let root = roots[Key.self] {
+                return root
+            } else {
+                let root = Key.defaultRoot
+                roots[Key.self] = root
+                root.parent = self
+                return root
+            }
+        }
+        set {
+            upgrade()
+            roots[Key.self] = newValue
+            newValue.parent = self
+        }
+    }
+    
+    func upgrade() {
+        objectWillChange.send()
+        version = UUID()
+        parent?.upgrade()
     }
     
     func dispatch<Action>(_ action: Action) where Action: AtomRootAction, Action.Root == Self {
@@ -78,4 +117,3 @@ public extension AtomRoot {
         await action.perform(with: self)
     }
 }
-
