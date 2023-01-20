@@ -9,7 +9,7 @@ import AtomObjects
 
 struct ContentView: View {
     
-    @AtomState(\CommonAtoms.counter)
+    @AtomState(\AtomObjects.counter)
     var counter
     
     var body: some View {
@@ -18,13 +18,13 @@ struct ContentView: View {
             Controls()
             
             SecondaryView()
-                .atomScope(root: CommonAtoms())
+                .atomScope(root: AtomObjects())
             
             TertiaryView()
-                .atomScope(root: CommonAtoms())
+                .atomScope(root: AtomObjects())
             
             QuaternaryView()
-                .atomScope(root: CommonAtoms())
+                .atomScope(root: AtomObjects())
         }
         .padding()
     }
@@ -32,13 +32,13 @@ struct ContentView: View {
 
 struct Controls: View {
     
-    @AtomState(\CommonAtoms.counter)
+    @AtomState(\AtomObjects.counter)
     var counter
     
-    @AtomAction(CommonAtoms.IncrementCounter(by: 1))
+    @AtomAction(AtomObjects.IncrementCounter(by: 1))
     var increment
     
-    @AtomAction(CommonAtoms.IncrementCounter(by: -1))
+    @AtomAction(AtomObjects.IncrementCounter(by: -1))
     var decrement
     
     @State
@@ -73,7 +73,7 @@ struct Controls: View {
 
 struct SecondaryView: View {
     
-    @AtomState(\CommonAtoms.counter)
+    @AtomState(\AtomObjects.counter)
     var counter
     
     var body: some View {
@@ -86,13 +86,13 @@ struct SecondaryView: View {
 
 struct TertiaryView: View {
     
-    @AtomState(\CommonAtoms.counter, set: { newValue, atom in
+    @AtomState(\AtomObjects.counter, set: { newValue, atom in
         atom.value = newValue < atom.value ? newValue - 1 : newValue + 1
     })
     var counter
     
     @EnvironmentObject
-    var root: CommonAtoms
+    var root: AtomObjects
     
     var body: some View {
         VStack {
@@ -132,17 +132,17 @@ struct TertiaryView: View {
 
 struct QuaternaryView: View {
     
-    @AtomState(\CommonAtoms.counter)
+    @AtomState(\AtomObjects.counter)
     var counter
     
     @EnvironmentObject
-    var dispatcher: CommonAtoms
+    var dispatcher: AtomObjects
     
     var body: some View {
         VStack {
             HStack {
                 Button {
-                    dispatcher.dispatch(CommonAtoms.DecrementCounter(by: counter == 0 ? 1 : abs(counter)))
+                    dispatcher.dispatch(AtomObjects.DecrementCounter(by: counter == 0 ? 1 : abs(counter)))
                 } label: {
                     Image(systemName: "minus.circle.fill")
                         .font(.title)
@@ -155,7 +155,7 @@ struct QuaternaryView: View {
                 Spacer()
                 
                 Button {
-                    CommonAtoms.IncrementCounter(by: counter == 0 ? 1 : abs(counter)).perform(with: dispatcher)
+                    AtomObjects.IncrementCounter(by: counter == 0 ? 1 : abs(counter)).perform(with: dispatcher)
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.title)
@@ -169,7 +169,7 @@ struct QuaternaryView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        AtomScope(root: CommonAtoms()) {
+        AtomScope(root: AtomObjects()) {
             ContentView()
         }
     }

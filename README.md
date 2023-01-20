@@ -49,18 +49,23 @@ struct EditingAtomKey: AtomObjectKey {
 }
 ```
 
-At last you need to implement AtomRoot protocol or subclass/extend CommonAtoms object and register your atom in the 
+At last you need to implement AtomRoot protocol or subclass/extend AtomObjects class and register your atom in the 
 container. Atom object key is intended to be used as the identifier of an atom path inside root container:
 
 ```swift
-extension CommonAtoms {
+extension AtomObjects {
      
     var isEditing: EditingAtom {
         get { return self[EditingAtomKey.self] }
         set { self[EditingAtomKey.self] = newValue }
     }
-    
-    // Implementation option using GenericAtom class 
+```
+
+Implementation option using GenericAtom:
+
+```swift
+extension AtomObjects {    
+     
     var isEditing: GenericAtom<Bool> {
         get { return self[EditingAtomKey.self] }
         set { self[EditingAtomKey.self] = newValue }
@@ -79,7 +84,7 @@ the specific atom root in the different places in your app.
 struct TheApp: App {
     var body: some Scene {
         WindowGroup {
-            AtomScope(root: CommonAtoms()) {
+            AtomScope(root: AtomObjects()) {
                 HomeView()
             }
         }
@@ -95,7 +100,7 @@ struct TheApp: App {
     var body: some Scene {
         WindowGroup {
             HomeView()
-                .atomScope(root: CommonAtoms())
+                .atomScope(root: AtomObjects())
         }
     }
 }
@@ -107,7 +112,7 @@ that use AtomState will automatically refresh when the atom is changed:
 ```swift
 struct HomeView: View {
     
-    @AtomState(\CommonAtoms.isEditing)
+    @AtomState(\AtomObjects.isEditing)
     var isEditing
 
     var body: some View {
@@ -135,7 +140,7 @@ For example, we have a simple counter atom:
         static var defaultValue: Int = 0
     }
     
-    class CommonAtoms: AtomRoot {
+    class AtomObjects: AtomRoot {
         var counter: AtomObject<Int> {
             get { return self[CounterAtomKey.self] }
             set { self[CounterAtomKey.self] = newValue }
@@ -155,7 +160,7 @@ the code example below. The action in the example have a configurable increment 
             self.value = value
         }
         
-        func perform(with root: CommonAtoms) async {
+        func perform(with root: AtomObjects) async {
             
             // Convenience wrapper allowing to access atom value via local variable
             @AtomValue(root.counter) var counter; 
@@ -170,10 +175,10 @@ The action from the example above can be stored and cashed inside consuming view
 ```swift
     struct CounterView: View {
         
-        @AtomState(\CommonAtoms.counter)
+        @AtomState(\AtomObjects.counter)
         var counter
     
-        @AtomAction(CommonAtoms.IncrementCounter(by: 1))
+        @AtomAction(AtomObjects.IncrementCounter(by: 1))
         var increment
     
         var body: some View {
@@ -193,17 +198,17 @@ If you need to configure the action upon execution, it can be done by directly d
 
     struct CounterView: View {
         
-        @AtomState(\CommonAtoms.counter)
+        @AtomState(\AtomObjects.counter)
         var counter
     
         @EnvironmentObject
-        var commons: CommonAtoms
+        var root: AtomObjects
     
         var body: some View {
         
             HStack {
                 Button {
-                    commons.dispatch(IncrementCounter(by: count * 2))
+                    root.dispatch(IncrementCounter(by: count * 2))
                 } label: {
                     Text("Increment")
                 }
@@ -213,7 +218,7 @@ If you need to configure the action upon execution, it can be done by directly d
                 
                 Button {
                     // It is possible to use action execution method notation
-                    DecrementCounter(by: count * 2).perform(with: commons)
+                    DecrementCounter(by: count * 2).perform(with: root)
                 } label: {
                     Text("Decrement")
                 }

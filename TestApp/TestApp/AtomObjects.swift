@@ -7,7 +7,7 @@
 import Foundation
 import AtomObjects
 
-extension CommonAtoms {
+extension AtomObjects {
     
     struct CounterAtomKey: AtomObjectKey {
         
@@ -22,7 +22,7 @@ extension CommonAtoms {
             self.value = value
         }
         
-        func perform(with root: CommonAtoms) async {
+        func perform(with root: AtomObjects) async {
             
             @AtomValue(\.counter, in: root) var counter;
             
@@ -38,7 +38,7 @@ extension CommonAtoms {
             self.value = value
         }
         
-        func perform(with root: CommonAtoms) async {
+        func perform(with root: AtomObjects) async {
             
             @AtomValue(root.counter) var counter;
             

@@ -13,7 +13,7 @@
 		2F7EF5FA296FA9CD00841598 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F7EF5F9296FA9CD00841598 /* Preview Assets.xcassets */; };
 		2F7EF60E296FA9CD00841598 /* TestAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F7EF60D296FA9CD00841598 /* TestAppUITests.swift */; };
 		2F9871602973AE1500669CB7 /* AtomObjects in Frameworks */ = {isa = PBXBuildFile; productRef = 2F98715F2973AE1500669CB7 /* AtomObjects */; };
-		2F987162297724D500669CB7 /* ComonAtoms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F987161297724D500669CB7 /* ComonAtoms.swift */; };
+		2F987162297724D500669CB7 /* AtomObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F987161297724D500669CB7 /* AtomObjects.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +36,7 @@
 		2F7EF609296FA9CD00841598 /* TestAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TestAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F7EF60D296FA9CD00841598 /* TestAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppUITests.swift; sourceTree = "<group>"; };
 		2F7EF623296FAB0700841598 /* AtomObjects */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = AtomObjects; path = ..; sourceTree = "<group>"; };
-		2F987161297724D500669CB7 /* ComonAtoms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComonAtoms.swift; sourceTree = "<group>"; };
+		2F987161297724D500669CB7 /* AtomObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtomObjects.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,7 +81,7 @@
 		2F7EF5F0296FA9CB00841598 /* TestApp */ = {
 			isa = PBXGroup;
 			children = (
-				2F987161297724D500669CB7 /* ComonAtoms.swift */,
+				2F987161297724D500669CB7 /* AtomObjects.swift */,
 				2F7EF5F1296FA9CB00841598 /* TestAppApp.swift */,
 				2F7EF5F3296FA9CB00841598 /* ContentView.swift */,
 				2F7EF5F5296FA9CD00841598 /* Assets.xcassets */,
@@ -226,7 +226,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2F7EF5F4296FA9CB00841598 /* ContentView.swift in Sources */,
-				2F987162297724D500669CB7 /* ComonAtoms.swift in Sources */,
+				2F987162297724D500669CB7 /* AtomObjects.swift in Sources */,
 				2F7EF5F2296FA9CB00841598 /* TestAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

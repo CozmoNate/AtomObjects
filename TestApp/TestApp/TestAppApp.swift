@@ -11,7 +11,7 @@ import AtomObjects
 struct TestApp: App {
     var body: some Scene {
         WindowGroup {
-            AtomScope(root: CommonAtoms()) {
+            AtomScope(root: AtomObjects()) {
                 ContentView()
             }
         }

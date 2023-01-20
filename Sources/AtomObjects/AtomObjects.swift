@@ -27,7 +27,7 @@ SOFTWARE.
 
 import Foundation
 
-open class CommonAtoms: AtomRoot {
+open class AtomObjects: AtomRoot {
     
     public var storage: AtomStorage
     public var version: AnyHashable
