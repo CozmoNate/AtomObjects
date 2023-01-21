@@ -227,3 +227,23 @@ If you need to configure the action upon execution, it can be done by directly d
         }
     }     
 ```
+
+If you need access to other roots inside an action, it is possible to do so by making the action a property wrapper:
+
+```swift
+    @propertyWrapper struct IncrementCounterAction: DynamicProperty {
+        
+        @AtomBinding(\AtomObjects.counter)
+        var counter
+        
+        var wrappedValue: (_ value: Int) -> Void {
+            { value in
+                Task { await projectedValue(value) }
+            }
+        }
+        
+        var projectedValue: (_ value: Int) async -> Void {
+            { counter += value }
+        }
+    }
+```
