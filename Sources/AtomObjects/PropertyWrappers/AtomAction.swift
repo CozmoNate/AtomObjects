@@ -27,17 +27,17 @@ SOFTWARE.
 
 import SwiftUI
 
-/// A property wrapper type that stores an action of a specified type with possibility of executing it later with the actual root.
+/// A property wrapper type that exposes the invocation of an action of the specified type with the actual root.
 @propertyWrapper
 public struct AtomAction<Action>: DynamicProperty, Equatable where Action: AtomRootAction {
-    
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        true
-    }
     
     public typealias Root = Action.Root
     public typealias SyncInvocation = () -> Void
     public typealias AsyncInvocation = () async -> Void
+    
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
     
     @EnvironmentObject
     private var root: Root
