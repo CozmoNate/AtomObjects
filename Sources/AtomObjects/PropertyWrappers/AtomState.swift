@@ -30,7 +30,11 @@ import Combine
 
 /// A property wrapper type that can read and write a value of a specific atom and refreshes views when the value is changed.
 @propertyWrapper
-public struct AtomState<Root, Atom, Value>: DynamicProperty where Root: AtomRoot, Atom: AtomObject, Atom.Value == Value {
+public struct AtomState<Root, Atom, Value>: DynamicProperty, Equatable where Root: AtomRoot, Atom: AtomObject, Atom.Value == Value {
+    
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.keyPath == rhs.keyPath
+    }
     
     @EnvironmentObject
     private var root: Root

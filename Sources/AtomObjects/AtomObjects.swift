@@ -27,7 +27,11 @@ SOFTWARE.
 
 import Foundation
 
-open class AtomObjects: AtomRoot {
+open class AtomObjects: AtomRoot, Equatable {
+    
+    public static func == (lhs: AtomObjects, rhs: AtomObjects) -> Bool {
+        return lhs === rhs
+    }
     
     public var parent: (any AtomRoot)?
     

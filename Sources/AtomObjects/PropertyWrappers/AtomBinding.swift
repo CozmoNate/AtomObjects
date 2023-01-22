@@ -30,7 +30,11 @@ import Combine
 
 /// A property wrapper type that can read and write a value of a specific atom. It does NOT refreshes views when the value is changed.
 @propertyWrapper
-public struct AtomBinding<Root, Atom, Value>: DynamicProperty where Root: AtomRoot, Atom: AtomObject, Atom.Value == Value {
+public struct AtomBinding<Root, Atom, Value>: DynamicProperty, Equatable where Root: AtomRoot, Atom: AtomObject, Atom.Value == Value {
+    
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.keyPath == rhs.keyPath
+    }
     
     @EnvironmentObject
     private var root: Root
@@ -38,20 +42,21 @@ public struct AtomBinding<Root, Atom, Value>: DynamicProperty where Root: AtomRo
     private var keyPath: ReferenceWritableKeyPath<Root, Atom>
     private var setter: ((_ newValue: Value, _ atomObject: Atom) -> Void)?
     
-    @StateObject
-    private var wrapper = Wrapper()
+    private var atom: Atom {
+        root[keyPath: keyPath]
+    }
     
     @MainActor
     public var wrappedValue: Value {
-        get { wrapper.atom.value } nonmutating set {
-            setter?(newValue, wrapper.atom) ?? wrapper.atom.setThenNotEqual(newValue)
+        get { atom.value } nonmutating set {
+            setter?(newValue, atom) ?? atom.setThenNotEqual(newValue)
         }
     }
     
     @MainActor
     public var projectedValue: Binding<Value> {
-        Binding { wrapper.atom.value } set: { newValue in
-            setter?(newValue, wrapper.atom) ?? wrapper.atom.setThenNotEqual(newValue)
+        Binding { atom.value } set: { newValue in
+            setter?(newValue, atom) ?? atom.setThenNotEqual(newValue)
         }
     }
     
@@ -68,41 +73,5 @@ public struct AtomBinding<Root, Atom, Value>: DynamicProperty where Root: AtomRo
     ) {
         self.keyPath = keyPath
         self.setter = set
-    }
-    
-    public mutating func update() {
-        wrapper.resolve(keyPath, root: root)
-    }
-}
-
-private extension AtomBinding {
-    
-    class Wrapper: ObservableObject {
-        
-        private var version: AnyHashable = UUID()
-        
-        var atom: Atom!
-        
-        var isResolved: Bool {
-            atom != nil
-        }
-        
-        func resolve(_ keyPath: ReferenceWritableKeyPath<Root, Atom>, root: Root) {
-            guard version != root.version else {
-                return
-            }
-
-            version = root.version
-            
-            let candidate = root[keyPath: keyPath]
-            
-            if let actual = atom {
-                if actual !== candidate {
-                    atom = candidate
-                }
-            } else {
-                atom = candidate
-            }
-        }
     }
 }

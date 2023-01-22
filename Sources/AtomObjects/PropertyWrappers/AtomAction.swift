@@ -29,7 +29,11 @@ import SwiftUI
 
 /// A property wrapper type that stores an action of a specified type with possibility of executing it later with the actual root.
 @propertyWrapper
-public struct AtomAction<Action>: DynamicProperty where Action: AtomRootAction {
+public struct AtomAction<Action>: DynamicProperty, Equatable where Action: AtomRootAction {
+    
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        true
+    }
     
     public typealias Root = Action.Root
     public typealias SyncInvocation = () -> Void
@@ -52,8 +56,10 @@ public struct AtomAction<Action>: DynamicProperty where Action: AtomRootAction {
     
     public var wrappedValue: SyncInvocation {
         return { [weak wrapper] in
-            Task {
-                await wrapper?.action.perform(with: root)
+            DispatchQueue.main.async {
+                Task {
+                    await wrapper?.action.perform(with: root)
+                }
             }
         }
     }
