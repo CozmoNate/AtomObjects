@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-ff69b4.svg)](https://github.com/kzlekk/AtomObjects/raw/master/LICENSE)
 ![Language](https://img.shields.io/badge/swift-5.7-orange.svg)
-![Coverage](https://img.shields.io/badge/coverage-75%25-green)
+![Coverage](https://img.shields.io/badge/coverage-78%25-green)
 
 AtomObjects is a lightweight state management library for SwiftUI. It allows building distributed & reusable shared 
 states for SwiftUI applications with minimum boilerplate code.

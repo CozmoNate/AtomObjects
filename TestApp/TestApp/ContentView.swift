@@ -14,7 +14,7 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Text("Counter: \(counter)")
+            Text("Counter: \(Int(counter))")
             Controls()
             
             SecondaryView()
@@ -47,17 +47,15 @@ struct Controls: View {
     var body: some View {
         HStack {
             Button {
-                decrement()
+                Task {
+                    await $decrement()
+                }
             } label: {
                 Image(systemName: "minus.circle.fill")
                     .font(.title)
             }
             
-            Slider(value: Binding {
-                Float(counter)
-            } set: { newValue in
-                counter = Int(newValue)
-            }, in: 0...10) {
+            Slider(value: $counter, in: 0...10) {
                 isEditing = $0
             }
             
@@ -78,7 +76,7 @@ struct SecondaryView: View {
     
     var body: some View {
         VStack {
-            Text("Secondary counter: \(counter)")
+            Text("Secondary counter: \(Int(counter))")
             Controls()
         }
     }
@@ -106,7 +104,7 @@ struct TertiaryView: View {
                 
                 Spacer()
                 
-                Text("Tertiary counter: \(counter)")
+                Text("Tertiary counter: \(Int(counter))")
                 
                 Spacer()
                 
@@ -150,7 +148,7 @@ struct QuaternaryView: View {
                 
                 Spacer()
                 
-                Text("Quaternary counter: \(counter)")
+                Text("Quaternary counter: \(Int(counter))")
                 
                 Spacer()
                 

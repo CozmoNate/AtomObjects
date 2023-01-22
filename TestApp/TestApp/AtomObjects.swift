@@ -11,14 +11,14 @@ extension AtomObjects {
     
     struct CounterAtomKey: AtomObjectKey {
         
-        static var defaultValue: Int = 0
+        static var defaultValue: Float = 0
     }
 
     struct IncrementCounter: AtomRootAction {
         
-        var value: Int
+        var value: Float
         
-        init(by value: Int) {
+        init(by value: Float) {
             self.value = value
         }
         
@@ -32,9 +32,9 @@ extension AtomObjects {
     
     struct DecrementCounter: AtomRootAction {
         
-        var value: Int
+        var value: Float
         
-        init(by value: Int) {
+        init(by value: Float) {
             self.value = value
         }
         
@@ -46,7 +46,7 @@ extension AtomObjects {
         }
     }
     
-    var counter: GenericAtom<Int> {
+    var counter: GenericAtom<Float> {
         get { return self[CounterAtomKey.self] }
         set { self[CounterAtomKey.self] = newValue }
     }

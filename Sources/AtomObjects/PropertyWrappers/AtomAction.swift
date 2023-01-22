@@ -39,38 +39,26 @@ public struct AtomAction<Action>: DynamicProperty, Equatable where Action: AtomR
     public typealias SyncInvocation = () -> Void
     public typealias AsyncInvocation = () async -> Void
     
-    private class Wrapper<Action>: ObservableObject where Action: AtomRootAction {
-        
-        let action: Action
-        
-        init(action: Action) {
-            self.action = action
-        }
-    }
-    
     @EnvironmentObject
     private var root: Root
     
-    @StateObject
-    private var wrapper: Wrapper<Action>
+    private var action: () -> Action
     
     public var wrappedValue: SyncInvocation {
-        return { [weak wrapper] in
-            DispatchQueue.main.async {
-                Task {
-                    await wrapper?.action.perform(with: root)
-                }
+        return {
+            Task {
+                await action().perform(with: root)
             }
         }
     }
     
     public var projectedValue: AsyncInvocation {
-        return { [weak wrapper] in
-            await wrapper?.action.perform(with: root)
+        return {
+            await action().perform(with: root)
         }
     }
     
     public init(_ action: @autoclosure @escaping () -> Action) {
-        _wrapper = StateObject(wrappedValue: Wrapper(action: action()))
+        self.action = action
     }
 }
