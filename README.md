@@ -7,12 +7,15 @@
 AtomObjects is a lightweight state management library for SwiftUI. It allows building reusable shared and scoped 
 states for SwiftUI applications with minimum boilerplate code.
 
+The current version of the library is considered stable and production ready. There is no intention to make changes
+to the API other than bug fixes.
+
 ## Motivation
 
-The main idea is to use small "decentralized" atom state primitives instead of a centralized store or data model. 
-Atom objects easily allow pinpoint refreshes of SwiftUI views instead of trying to think out an efficient 
-update strategy for bigger data models. Although it is not encouraged, you can implement complex state value 
-provided by an AtomObject if you'll wish so.
+The main idea of AtomObject is to use small "decentralized" atom state primitives instead of a centralized store or 
+data model.  Atom objects easily allow pinpoint refreshes of SwiftUI views instead of trying to think out an 
+efficient update strategy for bigger data models. Although it is not encouraged, you can implement complex state value 
+provided by a single AtomObject if you'll wish so.
 
 ## Installation
 
