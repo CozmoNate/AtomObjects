@@ -90,7 +90,7 @@ private extension AtomState {
             didSet {
                 value = atom.value
                 subscription = atom.objectWillChange
-                    .receive(on: RunLoop.main)
+                    .receive(on: DispatchQueue.main)
                     .sink { [weak self] _ in
                         if let self {
                             self.objectWillChange.send()
