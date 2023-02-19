@@ -46,14 +46,12 @@ public struct AtomBinding<Root, Atom, Value>: DynamicProperty, Equatable where R
         root[keyPath: keyPath]
     }
     
-    @MainActor
     public var wrappedValue: Value {
         get { atom.value } nonmutating set {
             setter?(newValue, atom) ?? atom.setThenNotEqual(newValue)
         }
     }
     
-    @MainActor
     public var projectedValue: Binding<Value> {
         Binding { atom.value } set: { newValue in
             setter?(newValue, atom) ?? atom.setThenNotEqual(newValue)
